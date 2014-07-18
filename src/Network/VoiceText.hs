@@ -20,7 +20,7 @@ import Control.Monad.Catch (MonadThrow)
 import Control.Monad.IO.Class (MonadIO)
 import Control.Monad.Trans.Control (MonadBaseControl)
 import Data.ByteString.Lazy (hPut)
-import Data.Maybe (maybeToList)
+import Data.Maybe (catMaybes)
 import GHC.Exception (throw)
 import Network.HTTP.Conduit (
   applyBasicAuth, checkStatus, HttpException(StatusCodeException), httpLbs, parseUrl, responseBody, responseStatus, urlEncodedBody, withManager)
@@ -49,7 +49,7 @@ tts basicAuth ttsParam = doRequest basicAuth "v1/tts" $ [textParam, speakerParam
   where
     textParam = ("text", text ttsParam)
     speakerParam = ("speaker", speakerName $ speaker ttsParam)
-    optionParams = concat $ fmap maybeToList $ [
+    optionParams = catMaybes [
       fmap (\e -> ("emotion", emotionName e)) $ emotion ttsParam,
       fmap (\el -> ("emotion_level", show el)) $ emotionLevel ttsParam,
       fmap (\p -> ("pitch", show p)) $ pitch ttsParam,
