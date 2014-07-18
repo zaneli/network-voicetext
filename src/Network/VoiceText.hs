@@ -19,7 +19,8 @@ module Network.VoiceText (
 import Control.Monad.Catch (MonadThrow)
 import Control.Monad.IO.Class (MonadIO)
 import Control.Monad.Trans.Control (MonadBaseControl)
-import Data.ByteString.Lazy (hPut)
+import Data.ByteString (hPut)
+import Data.ByteString.Lazy (toStrict)
 import Data.Maybe (catMaybes)
 import GHC.Exception (throw)
 import Network.HTTP.Conduit (
@@ -41,8 +42,8 @@ ttsToFile filePath basicAuth ttsParam = do
     Left err -> return $ Left err
     Right bytes -> do
       fileH <- openFile filePath WriteMode
-      hPut fileH bytes
-      return $ Right ()
+      result <- hPut fileH $ toStrict bytes
+      return $ Right result
 
 tts :: (MonadBaseControl IO m, MonadIO m, MonadThrow m) => BasicAuth -> TtsParams -> m (Either Error LI.ByteString)
 tts basicAuth ttsParam = doRequest basicAuth "v1/tts" $ [textParam, speakerParam] ++ optionParams

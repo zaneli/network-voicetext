@@ -41,11 +41,12 @@ addVolume 120 $
 call `ttsToFile`.
 
 ```
-Prelude Main> import Network.VoiceText
-Prelude Network.VoiceText Main> let b = basicAuth "basic_auth_username" ""
-Prelude Network.VoiceText Main> let p = ttsParams "Hello, world." Show
-Prelude Network.VoiceText Main> ttsToFile "./test.wav" b p
-Right ()
+import Network.VoiceText
+
+main = do
+   let b = basicAuth "basic_auth_username" ""
+   let p = ttsParams "Hello, world." Show
+   ttsToFile "./test.wav" b p
 ```
 
 #### Use response data to another way.
