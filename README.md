@@ -2,6 +2,8 @@
 
 [VoiceText Web API](https://cloud.voicetext.jp/webapi) Haskell wrapper library
 
+[![Build Status](https://api.travis-ci.org/zaneli/network-voicetext.png?branch=master)](https://travis-ci.org/zaneli/network-voicetext)
+
 ## Installation
 
 ```
