@@ -14,7 +14,7 @@ module Network.VoiceText.Types (
   Emotion(..),
   Error(..)) where
 
-data BasicAuth = BasicAuth { username::String, password::String } deriving (Show, Eq)
+data BasicAuth = BasicAuth { username::String, password::String } deriving (Eq, Show)
 basicAuth :: String -> String -> BasicAuth
 basicAuth username password = BasicAuth { username=username, password=password }
 
@@ -25,20 +25,22 @@ data TtsParams = TtsParams {
   , emotionLevel::Maybe Int
   , pitch::Maybe Int
   , speed::Maybe Int
-  , volume::Maybe Int } deriving (Show, Eq)
+  , volume::Maybe Int } deriving (Eq, Show)
 
-data Speaker = Show | Haruka | Hikari | Takeru deriving (Show, Eq)
+data Speaker = Show | Haruka | Hikari | Takeru deriving (Eq, Read, Show)
 speakerName :: Speaker -> String
 speakerName Show   = "show"
 speakerName Haruka = "haruka"
 speakerName Hikari = "hikari"
 speakerName Takeru = "takeru"
 
-data Emotion = Happiness | Anger | Sadness deriving (Show, Eq)
+data Emotion = Happiness | Anger | Sadness deriving (Eq, Read, Show)
 emotionName :: Emotion -> String
 emotionName Happiness = "happiness"
 emotionName Anger     = "anger"
 emotionName Sadness   = "sadness"
+
+data Error = Error { code::Int, message::String, body::String } deriving (Eq, Show)
 
 ttsParams :: String -> Speaker -> TtsParams
 ttsParams text speaker = TtsParams {
@@ -59,4 +61,3 @@ addSpeed speed ttsParams = ttsParams { speed=Just speed }
 addVolume :: Int -> TtsParams -> TtsParams
 addVolume volume ttsParams = ttsParams { volume=Just volume }
 
-data Error = Error { code::Int, message::String, body::String } deriving (Show, Eq)
