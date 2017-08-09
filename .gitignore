@@ -3,4 +3,5 @@ dist
 *.swp
 
 .cabal-sandbox
+.stack-work
 cabal.sandbox.config
