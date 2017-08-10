@@ -16,15 +16,14 @@ module Network.VoiceText (
   Emotion(..),
   Error(..)) where
 
-import Control.Monad.Catch (MonadThrow)
-import Control.Monad.IO.Class (MonadIO)
-import Control.Monad.Trans.Control (MonadBaseControl)
+import Control.Monad.Trans.Resource (runResourceT)
 import Data.ByteString (hPut)
 import Data.ByteString.Lazy (toStrict)
 import Data.Maybe (catMaybes)
 import GHC.Exception (throw)
+import Network.HTTP.Client.TLS (tlsManagerSettings)
 import Network.HTTP.Conduit (
-  applyBasicAuth, checkStatus, HttpException(StatusCodeException), httpLbs, parseUrl, responseBody, responseStatus, urlEncodedBody, withManager)
+  applyBasicAuth, checkStatus, HttpException(StatusCodeException), httpLbs, newManager, parseUrl, responseBody, responseStatus, urlEncodedBody)
 import Network.HTTP.Types (statusCode, statusMessage)
 import Network.VoiceText.Types
 import System.IO (openFile, IOMode(WriteMode))
@@ -45,7 +44,7 @@ ttsToFile filePath basicAuth ttsParam = do
       result <- hPut fileH $ toStrict bytes
       return $ Right result
 
-tts :: (MonadBaseControl IO m, MonadIO m, MonadThrow m) => BasicAuth -> TtsParams -> m (Either Error LI.ByteString)
+tts :: BasicAuth -> TtsParams -> IO (Either Error LI.ByteString)
 tts basicAuth ttsParam = doRequest basicAuth "v1/tts" $ [textParam, speakerParam] ++ optionParams
   where
     textParam = ("text", text ttsParam)
@@ -57,14 +56,16 @@ tts basicAuth ttsParam = doRequest basicAuth "v1/tts" $ [textParam, speakerParam
       fmap (\s -> ("speed", show s)) $ speed ttsParam,
       fmap (\v -> ("volume", show v)) $ volume ttsParam]
 
-doRequest :: (MonadBaseControl IO m, MonadIO m, MonadThrow m) => BasicAuth -> String -> [(String, String)] -> m (Either Error LI.ByteString)
+doRequest :: BasicAuth -> String -> [(String, String)] -> IO (Either Error LI.ByteString)
 doRequest basicAuth path params = do
   req <- (parseUrl $ apiURLBase ++ path)
       >>= return . applyBasicAuth user pass
       >>= return . urlEncodedBody packedParams
       >>= \r -> return (r { checkStatus = ckSt })
-  res <- withManager (\manager -> httpLbs req manager)
-  return $ returnValue res
+  manager <- newManager tlsManagerSettings
+  runResourceT $ do
+    res <- httpLbs req manager
+    return $ returnValue res
   where
     user = C8.pack $ username basicAuth
     pass = C8.pack $ password basicAuth
