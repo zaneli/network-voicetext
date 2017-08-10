@@ -85,6 +85,7 @@ library
   build-depends: base >=4.6 && <4.8
                , network-voicetext >=0.0
                , bytestring >=0.10
+               , word8 >=0.1
                , OpenAL >=1.6
                , ALUT >=2.3
 ```
@@ -92,11 +93,11 @@ library
 ```hs
 import Network.VoiceText
 import Sound.ALUT
+import Data.Word8
 
 import Data.ByteString.Internal (toForeignPtr)
 import Data.ByteString.Lazy (toStrict)
-import Foreign.ForeignPtr (castForeignPtr)
-import Foreign.ForeignPtr.Unsafe (unsafeForeignPtrToPtr)
+import Foreign.ForeignPtr (withForeignPtr)
 import System.Environment (getArgs)
 
 import qualified Foreign.C.Types as CT
@@ -106,14 +107,14 @@ main = do
   mr <- createVoice
   playVoice mr
 
-createVoice :: IO (AL.MemoryRegion a)
+createVoice :: IO (AL.MemoryRegion Word8)
 createVoice = do
   [message] <- getArgs
   (Right bytes) <- tts (basicAuth "basic_auth_username" "") (ttsParams message Show)
   let (fptrw, _, ptrLength) = toForeignPtr $ toStrict bytes
-  let size = CT.CInt $ fromIntegral ptrLength
-  let ptr = unsafeForeignPtrToPtr $ castForeignPtr fptrw
-  return $ AL.MemoryRegion ptr size
+  withForeignPtr fptrw $ \ptr -> do
+    let size = CT.CInt $ fromIntegral ptrLength
+    return $ AL.MemoryRegion ptr size
 
 playVoice :: AL.MemoryRegion a -> IO ()
 playVoice mr = withProgNameAndArgs runALUTUsingCurrentContext $ \_ _ -> do
