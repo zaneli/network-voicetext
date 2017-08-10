@@ -4,13 +4,6 @@
 
 [![Build Status](https://api.travis-ci.org/zaneli/network-voicetext.png?branch=master)](https://travis-ci.org/zaneli/network-voicetext)
 
-## Installation
-
-```
-> curl -O http://www.zaneli.com/repositories/cabalpkg/network-voicetext-0.0.0.1.tar.gz
-> cabal install network-voicetext-0.0.0.1.tar.gz
-```
-
 ## Usage
 
 ### Create Basic Auth Information
@@ -22,12 +15,13 @@ basicAuth "basic_auth_username" ""
 
 #### Set only the required items.
 
-```
+```hs
 ttsParams "Hello, world." Show
 ```
 
 #### Set the all items.
-```
+
+```hs
 addVolume 120 $
   addSpeed 150 $
   addPitch 50 $
@@ -42,7 +36,7 @@ addVolume 120 $
 
 call `ttsToFile`.
 
-```
+```hs
 import Network.VoiceText
 
 main = do
@@ -55,7 +49,7 @@ main = do
 
 call `tts`, and use response `Data.ByteString.Lazy.Internal.ByteString` data.
 
-```
+```hs
 import Network.VoiceText
 
 main = do
@@ -67,7 +61,35 @@ main = do
 
 ##### For example, play the voice data using [Sound.ALUT](https://hackage.haskell.org/package/ALUT).
 
+* stack.yaml
+
+```yml
+resolver: lts-2.22
+
+packages:
+- location: .
+- location:
+    git: https://github.com/zaneli/network-voicetext.git
+    commit: ffa6dd283290733047982e0b4a7ba2595f870f90
+  extra-dep: true
+
+extra-deps:
+- ALUT-2.4.0.2
+- OpenAL-1.7.0.4
 ```
+
+* example.cabal
+
+```
+library
+  build-depends: base >=4.6 && <4.8
+               , network-voicetext >=0.0
+               , bytestring >=0.10
+               , OpenAL >=1.6
+               , ALUT >=2.3
+```
+
+```hs
 import Network.VoiceText
 import Sound.ALUT
 
