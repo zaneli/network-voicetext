@@ -27,12 +27,14 @@ data TtsParams = TtsParams {
   , speed::Maybe Int
   , volume::Maybe Int } deriving (Eq, Show)
 
-data Speaker = Show | Haruka | Hikari | Takeru deriving (Eq, Read, Show)
+data Speaker = Show | Haruka | Hikari | Takeru | Santa | Bear deriving (Eq, Read, Show)
 speakerName :: Speaker -> String
 speakerName Show   = "show"
 speakerName Haruka = "haruka"
 speakerName Hikari = "hikari"
 speakerName Takeru = "takeru"
+speakerName Santa = "santa"
+speakerName Bear = "bear"
 
 data Emotion = Happiness | Anger | Sadness deriving (Eq, Read, Show)
 emotionName :: Emotion -> String
