@@ -3,6 +3,7 @@
 module Network.VoiceText (
   basicAuth,
   ttsParams,
+  addFormat,
   addEmotion,
   addEmotionLevel,
   addPitch,
@@ -13,6 +14,7 @@ module Network.VoiceText (
   BasicAuth(..),
   TtsParams(..),
   Speaker(..),
+  Format(..),
   Emotion(..),
   Error(..)) where
 
@@ -50,6 +52,7 @@ tts basicAuth ttsParam = doRequest basicAuth "v1/tts" $ [textParam, speakerParam
     textParam = ("text", text ttsParam)
     speakerParam = ("speaker", speakerName $ speaker ttsParam)
     optionParams = catMaybes [
+      fmap (\f -> ("format", formatName f)) $ format ttsParam,
       fmap (\e -> ("emotion", emotionName e)) $ emotion ttsParam,
       fmap (\el -> ("emotion_level", show el)) $ emotionLevel ttsParam,
       fmap (\p -> ("pitch", show p)) $ pitch ttsParam,
