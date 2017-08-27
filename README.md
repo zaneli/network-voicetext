@@ -27,6 +27,7 @@ addVolume 120 $
   addPitch 50 $
   addEmotionLevel 2 $
   addEmotion Happiness $
+  addFormat Ogg $
   ttsParams "こんにちは" Takeru
 ```
 
@@ -70,7 +71,7 @@ packages:
 - location: .
 - location:
     git: https://github.com/zaneli/network-voicetext.git
-    commit: ffa6dd283290733047982e0b4a7ba2595f870f90
+    commit: 54ce62af6c4decb023a36a39c081d0411c8cc11d
   extra-dep: true
 
 extra-deps:
