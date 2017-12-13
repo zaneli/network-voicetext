@@ -40,10 +40,11 @@ speakerName Takeru = "takeru"
 speakerName Santa = "santa"
 speakerName Bear = "bear"
 
-data Format = Wav | Ogg | Aac deriving (Eq, Read, Show)
+data Format = Wav | Ogg | Mp3 | Aac deriving (Eq, Read, Show)
 formatName :: Format -> String
 formatName Wav = "wav"
 formatName Ogg = "ogg"
+formatName Mp3 = "mp3"
 formatName Aac = "aac"
 
 data Emotion = Happiness | Anger | Sadness deriving (Eq, Read, Show)
