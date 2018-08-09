@@ -29,9 +29,9 @@ library
   -- other-modules:
   other-modules:     Network.VoiceText.Types
   -- other-extensions:
-  build-depends:     base >=4.6 && <4.8
-                     , http-client-tls >=0.2
-                     , http-conduit >=2.1
+  build-depends:     base >=4.7 && <5
+                     , http-client-tls >=0.3
+                     , http-conduit >=2.2 && < 3
                      , http-types >=0.8
                      , bytestring >=0.10
                      , transformers >=0.3

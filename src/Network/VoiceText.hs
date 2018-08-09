@@ -24,8 +24,7 @@ import Data.ByteString.Lazy (toStrict)
 import Data.Maybe (catMaybes)
 import GHC.Exception (throw)
 import Network.HTTP.Client.TLS (tlsManagerSettings)
-import Network.HTTP.Conduit (
-  applyBasicAuth, checkStatus, HttpException(StatusCodeException), httpLbs, newManager, parseUrl, responseBody, responseStatus, urlEncodedBody)
+import Network.HTTP.Conduit (applyBasicAuth, httpLbs, newManager, parseUrlThrow, responseBody, responseStatus, urlEncodedBody)
 import Network.HTTP.Types (statusCode, statusMessage)
 import Network.VoiceText.Types
 import System.IO (openFile, IOMode(WriteMode))
@@ -61,10 +60,9 @@ tts basicAuth ttsParam = doRequest basicAuth "v1/tts" $ [textParam, speakerParam
 
 doRequest :: BasicAuth -> String -> [(String, String)] -> IO (Either Error LI.ByteString)
 doRequest basicAuth path params = do
-  req <- (parseUrl $ apiURLBase ++ path)
+  req <- (parseUrlThrow $ apiURLBase ++ path)
       >>= return . applyBasicAuth user pass
       >>= return . urlEncodedBody packedParams
-      >>= \r -> return (r { checkStatus = ckSt })
   manager <- newManager tlsManagerSettings
   runResourceT $ do
     res <- httpLbs req manager
@@ -78,6 +76,3 @@ doRequest basicAuth path params = do
       | otherwise = Left $ Error { code = statusCode status, message = C8.unpack $ statusMessage status, body = LI.unpackChars $ responseBody res}
       where
         status = responseStatus res
-    ckSt status headers cookieJar
-      | statusCode status < 500 = Nothing
-      | otherwise               = throw $ StatusCodeException status headers cookieJar
